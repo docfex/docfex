@@ -128,25 +128,28 @@ def get_local_file(file_and_path):
     '''
     Provides local files for download
     '''
-    separated = file_and_path.split('/')
-    path = base_path + dir_breaks + dir_breaks.join(separated[:-1])
-    filename = separated[-1]
-    if is_path_valid(path):
-        return send_from_directory(path, filename, as_attachment=True)
-    else:
-        return abort(404)
+    return _get_os_file(file_and_path, embed=False) 
 
 def get_embed_file(file_and_path):
     '''
     Provides local files to be embedded into html
     '''
+    return _get_os_file(file_and_path, embed=True)   
+
+def _get_os_file(file_and_path, embed):
+    '''
+    Provides local files to be embedded into html, or downloaded
+    '''
     separated = file_and_path.split('/')
     path = base_path + dir_breaks + dir_breaks.join(separated[:-1])
     filename = separated[-1]
     if is_path_valid(path):
-        return send_from_directory(path, filename, as_attachment=False)
+        if embed == True:
+            return send_from_directory(path, filename, as_attachment=False)
+        else:
+            return send_from_directory(path, filename, as_attachment=True)    
     else:
-        return abort(404)    
+        return abort(404) 
 
 
 def search_requested(f):
@@ -189,9 +192,8 @@ def get_subpage(subpath):
     '''
     Returns the requested topic saved in elastic, or None if it wasn't found
     '''
-    web_path = root_web_path + subpath
     try:
-        s = Search(using=g.es_client).query('match', web_path=web_path)
+        s = Search(using=g.es_client).query('match', web_path=subpath)
         s = s.source(exclude=attachment_fields)
         res = s[0].execute()
         return None if (res.hits.total == 0) else res.hits[0]
@@ -208,32 +210,34 @@ def sub_pages(subpath=None):
     if subpath == None:
         return abort(404)
 
+    subpath = root_web_path + subpath
     if subpath[-1] == '/':
         subpath = subpath[:-1]
 
     first_hit = get_subpage(subpath)
+    norm_subpath = subpath.replace(root_web_path,'/')[1:]
     if first_hit == None:
         return abort(404)
     elif first_hit.meta.doc_type == file_group:
-        add_to_recent_topics(subpath)
+        add_to_recent_topics(norm_subpath)
         if first_hit.meta.index == 'markdown':
             headings = json.loads(first_hit.saved_md.header_ids)
             return render_template('md_content.html', md_content=Markup(first_hit.saved_md.converted_html),
                                    header=g.header, headings=headings, curr_topic=first_hit.name)
         elif first_hit.meta.index == 'pdf':
-            pdf_src = url_for('get_embed_file', file_and_path=subpath)
+            pdf_src = url_for('get_embed_file', file_and_path=norm_subpath)
             return render_template('pdf_content.html', pdf_src=pdf_src)
         elif first_hit.meta.index == 'audio':
-            return render_template('audio.html', file_and_path=subpath, type=first_hit.mimetype, header=g.header)
+            return render_template('audio.html', file_and_path=norm_subpath, type=first_hit.mimetype, header=g.header)
         elif first_hit.meta.index == 'video':
-            return render_template('video.html', file_and_path=subpath, type=first_hit.mimetype, header=g.header)
+            return render_template('video.html', file_and_path=norm_subpath, type=first_hit.mimetype, header=g.header)
         else:
             remove_from_recent_topics()
             return abort(404)    
     elif first_hit.meta.doc_type == folder_group:
         sub_t = topics(g.es_client, first_hit.web_path)
         return render_template("subsection.html", base_topics=sub_t.base_topics, sub_topics=sub_t.sub_topics,
-                               section=subpath, header=g.header, len=len)
+                               section=norm_subpath, header=g.header, len=len)
     else:
         return abort(404)
 

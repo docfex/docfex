@@ -3,7 +3,7 @@
 
 <div id="pageheader">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand text-center pl-2" href="/">Main</a>
+        <a class="navbar-brand text-center pl-2" href="{{ header.root_web_path }}">Main</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#head-nav" aria-controls="head-nav"
             aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -36,7 +36,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ header.cloud_storage_url }}">Cloud</a>
                 </li>
-                <li class="nav-item pr-2"><a class="nav-link" href="/Settings">Settings</a></li>
+                <li class="nav-item pr-2"><a class="nav-link" href="{{ header.root_web_path }}Settings">Settings</a></li>
             </ul>
         </div>
     </nav>

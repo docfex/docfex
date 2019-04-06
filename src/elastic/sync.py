@@ -52,8 +52,8 @@ def sync_elastic(es_client, app, update_indices=[]):
             synced_items = []
             with app.app_context():
                 for path, folders, files in os.walk(base_path):
-                    web_path = path.replace(base_path, '').replace(dir_breaks,'/')
-                    previous_path = web_path if web_path != '' else root_web_path
+                    web_path = root_web_path[:-1] + path.replace(base_path, '').replace(dir_breaks,'/')
+                    previous_path = web_path if web_path != root_web_path[:-1] else root_web_path
 
                     saved_folders = asyncio.run(_sync_folders(folders, path, web_path, previous_path, update_indices))
                     saved_files = asyncio.run(_sync_files(files, path, web_path, previous_path, update_indices))
