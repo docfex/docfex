@@ -1,0 +1,61 @@
+version: '3'
+services:
+  elastic:
+    image: manuelhatzl/elasticsearch_ingestattachment:6.7.1
+    container_name: elastic
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - http.max_content_length=1.7gB
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - esnet
+      - docfex-net
+  elastic2:
+    image: manuelhatzl/elasticsearch_ingestattachment:6.7.1
+    container_name: elastic2
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch"
+      - http.max_content_length=1.7gB
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata2:/usr/share/elasticsearch/data
+    networks:
+      - esnet
+  docfex:
+    image: manuelhatzl/docfex:latest
+    container_name: docfex
+    depends_on:
+      - elastic
+      - elastic2
+    volumes:
+      - /home/mhatzl/docfex/config:/opt/docfex/src/config
+      - /home/mhatzl/Documents/BigDir:/mnt/basepath
+    ports:
+      - 5000:5000
+    networks:
+      - docfex-net
+
+volumes:
+  esdata1:
+    driver: local
+  esdata2:
+    driver: local
+
+networks:
+  esnet:
+  docfex-net:
