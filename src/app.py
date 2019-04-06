@@ -192,7 +192,6 @@ def get_subpage(subpath):
     '''
     Returns the requested topic saved in elastic, or None if it wasn't found
     '''
-    #web_path = root_web_path + subpath
     try:
         s = Search(using=g.es_client).query('match', web_path=subpath)
         s = s.source(exclude=attachment_fields)
