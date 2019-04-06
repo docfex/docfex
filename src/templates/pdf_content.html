@@ -2,9 +2,9 @@
 {% extends 'base.html' %}
 
 {% block head %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js" integrity="sha256-rYPX3dXq8Nh532EvCS2foeyTgmzbcC8u+nCk/rEtKXA="
-        crossorigin="anonymous"></script>
-    
+
+    <script src="{{ url_for('static', filename='pdfobject/pdfobject.js') }}"></script>
+
 {% endblock %}
 
 {% block content %}
