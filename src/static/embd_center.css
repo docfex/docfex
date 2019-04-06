@@ -1,0 +1,17 @@
+#embd-container{
+    position: relative;
+    margin-top: -56px;
+    height: 100vh;
+}
+
+#embd-center{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%)
+}
+
+body{
+    background-color: rgba(0,0,0,0.4)
+}

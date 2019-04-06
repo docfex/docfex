@@ -1,0 +1,58 @@
+@media only screen and (min-width: 768px){
+    .subsection{
+        padding-top: 1rem;
+        margin-left: 3rem;
+        margin-right: 3rem;
+        margin-bottom: 1rem;
+        padding-bottom: 2rem;
+    }
+}
+
+.subheader{
+    padding-left: 2rem;
+}
+
+.subcontent{
+    position: relative;
+    left: 2rem;
+    margin-right: 2rem;
+}
+.subfilecontent{
+    position: relative;
+    left: 1rem;
+    margin: auto 0;
+}
+
+@media only screen and (min-width: 768px){
+    .filesection{
+        margin-left: 3rem;
+        margin-right: 3rem;
+        padding-bottom: 2rem;
+    }
+}
+@media only screen and (max-width: 767.98px){
+    .filesection{
+        margin-top: 1rem;
+        padding-bottom: 2rem;
+    }
+}
+
+.prefix-btn{
+    padding-top: 0.05rem;
+    padding-bottom: 0.05rem;
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+    margin: 0;
+}
+
+
+.folder-medium-grey{
+    color: #4d4d4d !important;
+}
+.file-medium-grey{
+    color: #666666 !important;
+}
+
+.add-padding{
+    padding-bottom: 0.25rem;
+}

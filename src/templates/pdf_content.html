@@ -1,0 +1,14 @@
+
+{% extends 'base.html' %}
+
+{% block head %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js" integrity="sha256-rYPX3dXq8Nh532EvCS2foeyTgmzbcC8u+nCk/rEtKXA="
+        crossorigin="anonymous"></script>
+    
+{% endblock %}
+
+{% block content %}
+
+<script>PDFObject.embed("{{ pdf_src }}");</script>
+
+{% endblock %}

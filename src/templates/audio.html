@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block header %}
+{% include 'header.html' %}
+{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='embd_center.css') }}" />
+
+<div id="embd-container">
+    <div id="embd-center">
+        <audio controls>
+            <source src="/fakeEmbed/{{ file_and_path }}" type="{{ type }}">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+    
+</div>
+
+{% endblock %}

@@ -1,0 +1,43 @@
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='header.css') }}" />
+
+<div id="pageheader">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand text-center pl-2" href="/">Main</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#head-nav" aria-controls="head-nav"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="head-nav" class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="knowledgeDropdown" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Knowledge
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="knowledgeDropdown">
+                        {% for head_topic in header.header_topics %}
+                            <a class="dropdown-item" href="{{ head_topic.path }}">{{ head_topic.name }}</a>
+                        {% endfor %}
+                    </div>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="{{ header.notes_url }}">Notes</a></li>
+            </ul>
+            <form class="form-inline my-0 mr-auto">
+                <input class="form-control mr-sm-2 searchinput" type="search" name="search" placeholder="Search" aria-label="Search" />
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+                    Search
+                </button>
+            </form>
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ header.repo_url }}">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ header.cloud_storage_url }}">Cloud</a>
+                </li>
+                <li class="nav-item pr-2"><a class="nav-link" href="/Settings">Settings</a></li>
+            </ul>
+        </div>
+    </nav>
+</div>

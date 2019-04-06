@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='codehighlighting.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='md_content.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='blockqoute.css') }}" />
+{% endblock %}
+
+{% block in_body %}
+data-spy="scroll" data-target="#navcontent"
+{% endblock %}
+
+{% block header %}
+{% include 'header.html' %}
+{% endblock %}
+
+{% block content %}
+
+    <div id="side-nav" class="position-fixed bg-light d-none d-lg-block">
+    
+        {% include 'content_nav.html' %}
+    
+    </div>
+
+    <div class="md-content">
+        <br>
+        <div class="container">{{ md_content }}</div>
+    </div>
+
+{% endblock %}

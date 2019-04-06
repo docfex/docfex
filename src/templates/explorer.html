@@ -1,0 +1,135 @@
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='explorer.css') }}" />
+
+{% macro files(name, webfile, index=0, position='main') -%}
+    <div class="d-xs-block ">
+        <h6 class="text-truncate my-0">
+            {% if (webfile.type == 'audio') or (webfile.type == 'video') %}
+            <button class="btn btn-light prefix-btn" type="button" data-toggle="collapse" data-target="#{{ position }}-embd-{{ index }}"
+                aria-expanded="false" aria-controls="{{ position }}-embd-{{ index }}">
+                <span class="{{ webfile.emb_toggle }}" aria-hidden="true"></span>
+                <span class="sr-only">Embedded content</span>
+            </button>
+            {% elif (webfile.type == 'markdown') or (webfile.type == 'pdf') %}
+            <button class="btn btn-light prefix-btn" type="button" data-toggle="collapse" data-target="#{{ position }}-search-file-{{ index }}"
+                aria-expanded="false" aria-controls="{{ position }}-search-file-{{ index }}">
+                <span class="fa fa-search" aria-hidden="true"></span>
+                <span class="sr-only">Search file</span>
+            </button>
+            {% endif %}
+            <span class="{{ webfile.icon }}"></span>
+            <a class="file-medium-grey" href="{{ webfile.path }}">{{ webfile.name }}</a>
+        </h6>
+    </div>
+    
+    {% if (webfile.type == 'audio') or (webfile.type == 'video') %}
+    <div class="collapse" id="{{ position }}-embd-{{ index }}">
+        {% if webfile.type == 'audio' %}
+        <audio controls preload="metadata">
+            <source src="/fakeEmbed{{ webfile.path }}" type="{{ webfile.mimetype }}">
+            Your browser does not support the audio element.
+        </audio>
+        {% elif webfile.type == 'video' %}
+            <div class="embed-responsive embed-responsive-16by9">
+                <video class="embed-responsive-item" controls preload="metadata">
+                    <source src="/fakeEmbed{{ webfile.path }}" type="{{ webfile.mimetype }}">
+                    Your browser does not support the video tag.
+                </video>
+            </div>       
+        {% endif %}
+    </div>
+    {% elif (webfile.type == 'markdown') or (webfile.type == 'pdf') %}
+        {{ search(web_path=webfile.path, type='file', index=index, position=position) }}
+    {% endif %}
+{%- endmacro %}
+
+{% macro search(name, web_path, type, index=0, position='main') -%}
+    <div class="collapse" id="{{ position }}-search-{{ type }}-{{ index }}">
+        <form class="form-inline">
+            <div class="d-none">
+                <input type="text" name="{{ type }}" readonly id="{{ position }}-{{ type }}-{{ index }}" value="{{ web_path }}">
+            </div>
+            <div class="d-flex flex-column w-100">
+                <div class="d-flex px-2 w-100 pb-0">
+                    <input class="w-100 form-control" type="search" name="search" placeholder="Search" aria-label="Search" />
+                </div>
+                <div class="justify-content-start px-2 pt-1">
+                    <button class="btn btn-success" type="submit">
+                        Search
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+{%- endmacro %}
+
+
+{% if 'folder' in base_topics %}
+    <div class="subsection">
+    {% for folder in base_topics['folder'] %}
+        <div class="row">
+            <h5 class="subheader m-0 text-truncate">
+                <button class="btn btn-light" type="button" data-toggle="collapse" data-target="#main-search-folder-{{ loop.index }}"
+                    aria-expanded="false" aria-controls="main-search-folder-{{ loop.index }}">
+                    <span class="fa fa-search" aria-hidden="true"></span>
+                    <span class="sr-only">Search folder</span>
+                </button>
+                <a class="text-dark" href="{{ folder.path }}">{{ folder.name }}</a>
+                {% if len(sub_topics[folder.name]) != 0 %}
+                <button class="btn btn-light" type="button" data-toggle="collapse" data-target="#sub-{{ loop.index }}" aria-expanded="false"
+                    aria-controls="sub-{{ loop.index }}">
+                    <span class="fas fa-chevron-down" aria-hidden="true"></span>
+                    <span class="sr-only">Topic content</span>
+                </button>
+                {% else %}
+                <button class="btn btn-light d-none" type="button">
+                    <span class="fas fa-chevron-down" aria-hidden="true"></span>
+                    <span class="sr-only">Topic content</span>
+                </button>
+                {% endif %}
+            </h5>
+        </div>
+        {{ search(web_path=folder.path, type='folder', index=loop.index, position='main') }}
+        
+        {% if len(sub_topics[folder.name]) != 0 %}
+        <div class="subcontent">
+            <div class="collapse" id="sub-{{ loop.index }}">
+                {% if 'folder' in sub_topics[folder.name] %}
+                    {% for sub_folder in sub_topics[folder.name]['folder'] %}
+                    <div class="d-xs-block ">
+                        <h6 class="text-truncate my-0">
+                            <button class="btn btn-light prefix-btn" type="button" data-toggle="collapse" data-target="#sub-search-folder-{{ loop.index }}"
+                                aria-expanded="false" aria-controls="sub-search-folder-{{ loop.index }}">
+                                <span class="fa fa-search" aria-hidden="true"></span>
+                                <span class="sr-only">Search folder</span>
+                            </button>
+                            <span class="{{ sub_folder.icon }}"></span>
+                            <a class="folder-medium-grey" href="{{ sub_folder.path }}">{{ sub_folder.name }}</a>
+                        </h6>
+                    </div>
+                    {{ search(web_path=sub_folder.path, type='folder', index=loop.index, position='sub') }}
+                    {% endfor %}
+                {% endif %}
+
+                {% if 'file' in sub_topics[folder.name] %}
+                    {% for sub_wf in sub_topics[folder.name]['file'] %}
+                        {{ files(webfile=sub_wf, index=loop.index, position='sub') }} 
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+    </div>
+{% endif %}
+{% if 'file' in base_topics %}
+    <div class="filesection">
+        <h4 class="text-dark">Files</h4>
+        <hr>
+        <div class="subcontent">
+            {% for wf in base_topics['file'] %}
+                {{ files(webfile=wf, index=loop.index, position='main') }}
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}

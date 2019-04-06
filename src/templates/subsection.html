@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block header %}
+{% include 'header.html' %}
+{% endblock %}
+
+{% set div_sections = section.split('/') %}
+
+{% block breadcrumb %}
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='subsection.css') }}" />
+
+<div class="bg-light text-truncate">
+    <nav aria-label="breadcrumb-section">
+        <ol class="breadcrumb my-auto d-md-inline-flex d-flex-column">
+            <li class="breadcrumb-item"><a href="/">Main</a></li>
+            {% for div_sect in div_sections %}
+            {% if loop.last %}
+            <li class="breadcrumb-item active" aria-current="page">{{div_sect}}</li>
+            {% else %}
+            {% set sect_link = '/'.join(div_sections[:loop.index]) %}
+            <li class="breadcrumb-item"><a href="/{{sect_link}}">{{div_sect}}</a></li>
+            {% endif %}
+            {% endfor %}
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div id="knowledge-topic" class="container mb-3 mt-3 bg-light">
+    <h3 class="ml-5 pt-3 text-truncate">{{div_sections[-1]}}</h3>
+    <hr class="mt-0" />
+
+    {% include 'explorer.html' %}
+
+</div>
+{% endblock %}
+
+{% block footer %}
+{% include 'footer.html' %}
+{% endblock %}

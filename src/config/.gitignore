@@ -1,0 +1,3 @@
+# don't version config so secret_key, urls and directory names are not seen in public
+config.py
+config.py.docker

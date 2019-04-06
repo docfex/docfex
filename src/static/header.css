@@ -1,0 +1,15 @@
+@media only screen and (min-width: 992px){
+    .searchinput{
+        width: 300px !important;
+    }
+}    
+@media only screen and (min-width: 1200px){
+    .searchinput{
+        width: 500px !important;
+    }
+}
+@media only screen and (min-width: 1600px){
+    .searchinput{
+        width: 700px !important;
+    }
+}

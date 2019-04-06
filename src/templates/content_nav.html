@@ -1,0 +1,19 @@
+<h3 class="mt-2 text-center text-dark text-truncate">Content</h3>
+<hr class="my-0">
+<div id="nav-column">
+<nav id="navcontent" class="text-right">
+    <ul id="nav-list" class="nav nav-pills flex-column p-2">
+        {% for nr, id, text in headings %}
+            {% if nr != 0 %}
+                <li class="nav-item">
+                    <a class="nav-link p-1" href="#{{ id }}"><h{{nr}} class="right-indent m-1">{{ text }}</h{{nr}}></a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link p-0" href="#{{ id }}"><p class="right-indent m-0">{{ text }}</p></a>
+                </li>
+            {% endif %}    
+        {% endfor %}
+    </ul>
+</nav>
+</div>

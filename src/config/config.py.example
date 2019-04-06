@@ -1,0 +1,92 @@
+
+#######################################################################################################
+#                               OS settings
+#######################################################################################################
+
+# Absolute path to a directory that is used as starting point
+base_path = '<path on os from which on docfex looks up documents>'
+
+# Depending on the OS, paths are separated differently
+# Linux:
+dir_breaks = '/'
+# Windows:
+# dir_breaks = '\\'
+
+
+#######################################################################################################
+#                               Flask settings
+#######################################################################################################
+
+# Define ip and port for flask
+# For docker, set hostname = '0.0.0.0' to reach out of the container
+# When using flask behind a proxy, you might want to set hostname = '127.0.0.1'
+flask_hostname = '0.0.0.0'
+flask_port = 5000
+
+# Define the root web path flask should use
+# e.g. root_web_path = '/docfex/' (Note: ending / is mandatory)
+root_web_path = '/'
+
+# Secret key flask uses for session cookies
+SECRET_KEY = r'<generate e.g. with "os.urandom(24)>"'
+
+# Define number of elements displayed in the recent section on the mainapge
+recent_topic_len = 5
+
+
+#######################################################################################################
+#                               Elastic settings
+#######################################################################################################
+
+# Host and port to connect to elasticsearch
+# When using docker, set es_host = <container name of elastic>
+# Note: A docker bridge network must be created to connect elastic with flask
+es_host = 'localhost'
+es_port = 9200
+
+# Define how often elastic gets synced with the os [min]
+# Note: for big directories you might want to increase this value
+sync_interval = 5
+
+
+#######################################################################################################
+#                               Search settings
+#######################################################################################################
+
+max_found_names = 50
+max_found_content = 50
+preview_len = 1000
+
+
+#######################################################################################################
+#                               Optional settings
+#######################################################################################################
+
+# Urls displayed in the website header
+cloud_storage_url = '<optional url to a cloud storage like seafile,nextcloud, or any other website>'
+repo_url = '<optional url to gitlab/github or any other website>'
+notes_url = '<optional url to e.g. onenote or any other website>'
+
+
+
+
+#######################################################################################################
+#               Fixed settings!          !! DO NOT CHANGE !!
+#######################################################################################################
+# Safety not guaranteed when changing
+folder_group = 'folder'
+file_group = 'file'
+
+supp_mime_types = {\
+    'pdf': ['application/pdf',], \
+    'audio': ['audio/aac', 'audio/mp4', 'audio/mpeg', 'audio/ogg', 'audio/wav', 'audio/webm'],\
+    'video': ['video/mp4', 'video/ogg', 'video/webm'],\
+    'markdown': ['text/markdown']}
+
+web_icons = {\
+    'folder': 'fas fa-folder', \
+    'pdf': 'fas fa-file-pdf', \
+    'markdown': 'fab fa-markdown', \
+    'video': 'fas fa-file-video', \
+    'audio': 'fas fa-file-audio'}
+

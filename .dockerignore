@@ -1,0 +1,6 @@
+.git*
+.v*
+doc
+src/config/*
+src/elastic/docker
+**/__pycache__

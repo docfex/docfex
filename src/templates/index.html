@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    {% include 'header.html' %}
+{% endblock %}
+
+{% block content %}
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='recent.css') }}" />
+
+    <div id="recent-topic" class="container mb-4 mt-3">
+        <h1 class="ml-5 text-truncate">Recent</h1>
+        <hr class="m-0" />
+        {% if len(recent_topics) > 0 %}
+        {% for recent_topic in recent_topics %}
+            {% set topic_sections = recent_topic.split('/') %}
+            {% set topic_end = topic_sections[-1] %}      
+
+            <div class="bg-light resent-section text-truncate">
+                <a class="breadcrumb d-block d-md-none text-truncate" href="/{{ recent_topic }}">{{ topic_end }}</a>
+                <nav class="d-none d-md-block" aria-label="recent-section">
+                    <ol class="breadcrumb my-auto pl-4 d-none d-sm-inline-flex">
+                        {% for section in topic_sections %}
+                            {% set link = '/'.join(topic_sections[:loop.index]) %}
+                            <li class="breadcrumb-item"><a href="/{{ link }}">{{ section }}</a></li>
+                        {% endfor %}
+                    </ol>
+                </nav>
+            </div>
+            
+        {% endfor %}
+        {% endif %}
+    </div>
+
+    <div id="knowledge-topic" class="container mb-5">
+        <h1 class="ml-5 text-truncate">Knowledge</h1>
+        <hr class="mb-0" />
+    
+        <div class="bg-light">
+            {% include 'explorer.html' %}
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block footer %}
+    {% include 'footer.html' %}
+{% endblock %}

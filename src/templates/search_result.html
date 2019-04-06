@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='search.css') }}" />
+{% endblock %}
+
+{% block header %}
+{% include 'header.html' %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="container pb-3">
+        <h2 class="pt-3">Results</h2>
+        <hr>
+        <div>
+            {% if 'folder' in search_results  %}
+                <h5 class="text-truncate mb-0">
+                    <span>Found Directories: <b>{{ len(search_results['folder']) }}</b></span>
+                    <button class="btn btn-light" type="button" data-toggle="collapse" 
+                        data-target="#found-dirs" aria-expanded="true"
+                        aria-controls="found-dirs">
+                        <span class="fas fa-chevron-down" aria-hidden="false"></span>
+                        <span class="sr-only">Found directories</span>
+                    </button>
+                </h5>               
+                <div id="found-dirs" class="collapse show">
+                    <ul class="my-auto">
+                        {% for folder in search_results['folder'] %}
+                        <li class=" py-1 text-truncate">
+                            <span class="{{ folder.icon }}"></span>
+                            <a class="text-dark" href="{{ folder.path }}" data-toggle="tooltip" title="{{ folder.path }}">
+                                {{ folder.name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% if 'file' in search_results %}
+                <h5 class="text-truncate mb-0 mt-2">
+                    <span>Found Files: <b>{{ len(search_results['file']) }}</b></span>
+                    <button class="btn btn-light" type="button" data-toggle="collapse" 
+                        data-target="#found-files" aria-expanded="true"
+                        aria-controls="found-files">
+                        <span class="fas fa-chevron-down" aria-hidden="false"></span>
+                        <span class="sr-only">Found files</span>
+                    </button>
+                </h5>
+                <div id="found-files" class="collapse show">
+                    <ul class="my-auto">
+                        {% for file in search_results['file'] %}
+                            <li class=" py-1 text-truncate">
+                                <span class="{{ file.icon }}"></span>
+                                <a class="text-dark" href="{{ file.path }}" data-toggle="tooltip" title="{{ file.path }}">
+                                    {{ file.name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% if 'content' in search_results %}
+                <h5 class="text-truncate mb-0 mt-2">
+                    <span>Found in Files: <b>{{ len(search_results['content']) }}</b></span>
+                    <button class="btn btn-light" type="button" data-toggle="collapse" 
+                        data-target="#found-content" aria-expanded="true"
+                        aria-controls="found-content">
+                        <span class="fas fa-chevron-down" aria-hidden="false"></span>
+                        <span class="sr-only">Found content</span>
+                    </button>
+                </h5>
+                <div id="found-content" class="collapse show">
+                    <div class="list-group">
+                        {% for content in search_results['content'] %}
+                            <a href="{{ content.path }}" class="list-group-item list-group-item-action flex-column align-items-start">
+                                <h5 class="mb-1 text-truncate">
+                                    <span class="{{ content.icon }}"></span>
+                                    {{ content.name }}
+                                </h5>
+                                <!-- TODO: offsets are not returned for now <small class="mb-1">Offset: {{ content.rel_offset }}</small> -->
+                                <p class="mb-1">{{ content.preview }}</p>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>       
+    </div>
+
+{% endblock %}

@@ -1,0 +1,116 @@
+
+/* Style sample from: https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_custom_checkbox */
+.cb-container {
+  display: block;
+  position: relative;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.cb-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #eee;
+  border-color: #28a745;
+  border-style: solid;
+}
+
+.cb-container:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+.checkmark::after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.cb-container .checkmark::after {
+  border: solid white;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.cb-container input:checked ~ .checkmark {
+  background-color: #28a745;
+}
+
+.cb-container input:checked ~ .checkmark::after {
+  display: block;
+}
+
+
+.cb-container input:indeterminate ~ .checkmark {
+  background-color: #28a745;
+}
+
+.cb-container input:indeterminate ~ .checkmark::after {
+  display: block;
+  -webkit-transform: rotate(0deg);
+  -ms-transform: rotate(0deg);
+  transform: rotate(0deg);
+}
+
+.big-cb input:indeterminate ~ .checkmark::after {
+  left: 6px;
+  top: 50%;
+  width: 15px;
+  height: 1px;
+  border-width: 0 0px 3px 0;
+}
+
+.big-cb {
+  padding-left: 45px;
+  margin-bottom: 12px;
+  font-size: 22px;
+}
+
+.big-cm {
+  height: 30px;
+  width: 30px;
+  border-width: 1px;
+}
+
+.big-cb .big-cm::after {
+  left: 9px;
+  top: 4px;
+  width: 10px;
+  height: 18px;
+  border-width: 0 3px 3px 0;
+}
+
+.small-cb {
+  padding-left: 30px;
+  margin-bottom: 6px;
+  font-size: 16px;
+}
+
+.small-cm {
+  height: 20px;
+  width: 20px;
+  border-width: 1px;
+}
+
+.small-cb .small-cm::after {
+  left: 6px;
+  top: 3px;
+  width: 6px;
+  height: 11px;
+  border-width: 0 2px 2px 0;
+}
+
+
+

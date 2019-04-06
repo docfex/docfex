@@ -1,0 +1,44 @@
+#nav-column {
+    display: flex;
+    overflow: hidden;
+    height: 100vh;
+    margin-top: -100px;
+    padding-top: 100px;
+    position: relative;
+    backface-visibility: hidden;
+    will-change: overflow;
+}
+
+#navcontent {
+    overflow: auto;
+    height: auto;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: none;
+}
+
+body {
+  position: relative;
+}
+
+.anchor a {
+  position: absolute;
+  top: -80px;
+}
+
+.anchor {
+  position: relative;
+}
+
+@media only screen and (min-width: 992px){
+  .md-content{
+  margin-left: 300px;
+  }
+  #side-nav{
+
+    width: 300px;
+  }
+  .right-indent{
+    padding-right: 1rem;
+  }
+}
+

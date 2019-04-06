@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='settings.css') }}" />
+<script src="{{ url_for('static', filename='settings.js') }}"></script>
+{% endblock %}
+
+{% block in_body %}
+    onload="setupNestedCheckBox()"
+{% endblock %}
+
+{% block header %}
+{% include 'header.html' %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container pb-3">
+    <h2 class="pt-3">Search Settings</h2>
+    <hr>
+    <div id="searchSettings" class="pl-3">
+        <form method="POST" id="searchSettingsForm">
+            <label class="big-cb cb-container">
+                {% set global_in_file_state = 'checked' if search_sets.global_search_in_files else '' %}
+            
+                Globally search file content
+                <input type="checkbox" name="globalSearchInFiles" {{ global_in_file_state }}>
+                <span class="big-cm checkmark"></span>
+            </label>
+            <label class="big-cb cb-container">
+                {% set in_subfile_state = 'checked' if search_sets.search_in_subfiles else '' %}
+
+                Search file content inside a folder
+                <input type="checkbox" name="searchInSubFiles" {{ in_subfile_state }}>
+                <span class="big-cm checkmark"></span>
+            </label>
+            <button class="btn btn-success my-2 my-sm-0 ml-2" name="btnSearchSettings" form="searchSettingsForm" type="submit">
+                Save
+            </button>
+        </form>    
+    </div>
+    <h2 class="pt-4">Elastic Settings</h2>
+    <hr>
+    <div id="elasticSettings" class="pl-3">
+        <h4 class="py-2">Update Settings:</h2>
+        <form method="POST" id="esUpdateForm">
+            <label class="big-cb cb-container" for='mainBox'>
+                Update All
+                <input id='mainBox' type="checkbox">
+                <span class="big-cm checkmark"></span>
+            </label>
+            <h5 class="ml-2 text-truncate">
+                Advanced
+                <button class="btn btn-light" type="button" data-toggle="collapse" data-target="#advanced-update-settings"
+                    aria-expanded="false" aria-controls="advanced-update-settings">
+                    <span class="fas fa-chevron-down" aria-hidden="true"></span>
+                    <span class="sr-only">Advanced update settings</span>
+                </button>
+            </h5>           
+            <div class="collapse mb-2" id="advanced-update-settings">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <label class="small-cb cb-container">
+                            {% set update_markdown = 'checked' if es_sets.update_markdown else '' %}
+                
+                            Update Markdown
+                            <input class="subBox" type="checkbox" name="updateMarkdown" {{ update_markdown }}>
+                            <span class="small-cm checkmark"></span>
+                        </label>
+                    </li>
+                    <li class="list-group-item">
+                        <label class="small-cb cb-container">
+                            {% set update_pdf = 'checked' if es_sets.update_pdf else '' %}
+                
+                            Update Pdf
+                            <input class="subBox" type="checkbox" name="updatePdf" {{ update_pdf }}>
+                            <span class="small-cm checkmark"></span>
+                        </label>
+                    </li>
+                    <li class="list-group-item">
+                        <label class="small-cb cb-container">
+                            {% set update_audio = 'checked' if es_sets.update_audio else '' %}
+                    
+                            Update Audio
+                            <input class="subBox" type="checkbox" name="updateAudio" {{ update_audio }}>
+                            <span class="small-cm checkmark"></span>
+                        </label>
+                    </li>
+                    <li class="list-group-item">
+                        <label class="small-cb cb-container">
+                            {% set update_video = 'checked' if es_sets.update_video else '' %}
+                    
+                            Update Video
+                            <input class="subBox" type="checkbox" name="updateVideo" {{ update_video }}>
+                            <span class="small-cm checkmark"></span>
+                        </label>
+                    </li>
+                    <li class="list-group-item">
+                        <label class="small-cb cb-container">
+                            {% set update_folder = 'checked' if es_sets.update_folder else '' %}
+                    
+                            Update Folder
+                            <input class="subBox" type="checkbox" name="updateFolder" {{ update_folder }}>
+                            <span class="small-cm checkmark"></span>
+                        </label>
+                    </li>
+                </ul>
+            </div> 
+            <button class="btn btn-success my-2 my-sm-0 ml-2" name="btnEsUpdate" form="esUpdateForm" type="submit">
+                Update
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block footer %}
+    {% include 'footer.html' %}
+{% endblock %}
