@@ -17,12 +17,12 @@
             {% set topic_end = topic_sections[-1] %}      
 
             <div class="bg-light resent-section text-truncate">
-                <a class="breadcrumb d-block d-md-none text-truncate" href="/{{ recent_topic }}">{{ topic_end }}</a>
+                <a class="breadcrumb d-block d-md-none text-truncate" href="{{ header.root_web_path }}{{ recent_topic }}">{{ topic_end }}</a>
                 <nav class="d-none d-md-block" aria-label="recent-section">
                     <ol class="breadcrumb my-auto pl-4 d-none d-sm-inline-flex">
                         {% for section in topic_sections %}
                             {% set link = '/'.join(topic_sections[:loop.index]) %}
-                            <li class="breadcrumb-item"><a href="/{{ link }}">{{ section }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ header.root_web_path }}{{ link }}">{{ section }}</a></li>
                         {% endfor %}
                     </ol>
                 </nav>
