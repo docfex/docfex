@@ -4,7 +4,8 @@ from elasticsearch.exceptions import TransportError
 from urllib3.exceptions import NewConnectionError
 from elasticsearch.client.cat import CatClient
 from src.config.config import es_host, es_port
-import sys 
+import sys
+import asyncio 
 
 used_es_indices = ['markdown', 'pdf', 'audio', 'video', 'folder']
 
@@ -24,12 +25,21 @@ def setup_elastic():
     '''
     Creates a connection to elastic and initialises all needed documents
     '''
-    try:
-        es_client = connections.create_connection(host=es_host, port=es_port, timeout=60)
-        es_act_indices = get_es_indices(es_client)
-    except (TransportError, NewConnectionError, ConnectionRefusedError):
-        print('Can\'t connect to elastic')
-        sys.exit()
+    es_connect_timeout = 0
+    connected_to_es = False
+    while (connected_to_es == False):
+        try:
+            es_client = connections.create_connection(host=es_host, port=es_port, timeout=60)
+            es_act_indices = get_es_indices(es_client)
+            connected_to_es = True
+        except (TransportError, NewConnectionError, ConnectionRefusedError):
+            es_connect_timeout += 1
+            if es_connect_timeout < 60:
+                print('Can\'t connect to elastic, retrying in 1 second')
+                asyncio.run(asyncio.sleep(1))
+            else:
+                print('Failed to connect to elastic')
+                sys.exit()
 
     _init_doc(folder.FolderDoc, es_act_indices)
     _init_doc(audio.AudioDoc, es_act_indices)
