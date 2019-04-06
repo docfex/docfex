@@ -1,4 +1,4 @@
-from src.config.config import cloud_storage_url, repo_url, notes_url
+from src.config.config import cloud_storage_url, repo_url, notes_url, root_web_path
 from .topics import topics
 
 class header:
@@ -10,5 +10,6 @@ class header:
         self.cloud_storage_url = cloud_storage_url
         self.repo_url = repo_url
         self.notes_url = notes_url
+        self.root_web_path = root_web_path
 
 

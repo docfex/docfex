@@ -26,13 +26,13 @@
     <div class="collapse" id="{{ position }}-embd-{{ index }}">
         {% if webfile.type == 'audio' %}
         <audio controls preload="metadata">
-            <source src="/fakeEmbed{{ webfile.path }}" type="{{ webfile.mimetype }}">
+            <source src="{{ header.root_web_path }}fakeEmbed{{ webfile.path.replace(header.root_web_path,'/')[1:] }}" type="{{ webfile.mimetype }}">
             Your browser does not support the audio element.
         </audio>
         {% elif webfile.type == 'video' %}
             <div class="embed-responsive embed-responsive-16by9">
                 <video class="embed-responsive-item" controls preload="metadata">
-                    <source src="/fakeEmbed{{ webfile.path }}" type="{{ webfile.mimetype }}">
+                    <source src="{{ header.root_web_path }}fakeEmbed{{ webfile.path.replace(header.root_web_path,'/')[1:] }}" type="{{ webfile.mimetype }}">
                     Your browser does not support the video tag.
                 </video>
             </div>       

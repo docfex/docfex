@@ -13,13 +13,13 @@
 <div class="bg-light text-truncate">
     <nav aria-label="breadcrumb-section">
         <ol class="breadcrumb my-auto d-md-inline-flex d-flex-column">
-            <li class="breadcrumb-item"><a href="/">Main</a></li>
+            <li class="breadcrumb-item"><a href="{{ header.root_web_path }}">Main</a></li>
             {% for div_sect in div_sections %}
             {% if loop.last %}
             <li class="breadcrumb-item active" aria-current="page">{{div_sect}}</li>
             {% else %}
             {% set sect_link = '/'.join(div_sections[:loop.index]) %}
-            <li class="breadcrumb-item"><a href="/{{sect_link}}">{{div_sect}}</a></li>
+            <li class="breadcrumb-item"><a href="{{ header.root_web_path }}{{sect_link}}">{{div_sect}}</a></li>
             {% endif %}
             {% endfor %}
         </ol>
