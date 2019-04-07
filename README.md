@@ -33,9 +33,19 @@ For instructions on how to run/install docfex from source, go to [InstallFromSou
 
 
 ## Usage
-After you have installed docfex and you can see the base directory inside your browser, you can start exploring the document tree, try searching for keywords either globally or local per file or folder, or you can manage docfex settings under [<your path to docfex>/Settings](http://localhost:5000/Settings).
+After you have installed docfex and you can see the base directory inside your browser, you can start exploring the document tree. Try searching for keywords either global or local per file or folder, or you can manage docfex settings under [<your path to docfex>/Settings](http://localhost:5000/Settings).
 On the settings page you can define if file contents are searched globally or just per sub directory and you can force docfex to update Elasticsearch.
 
+#### Preview of the docfex web explorer:
+![docfex Webexplorer](doc/Images/UsagePreview/general_explorer.gif)
+</br></br>
+#### Preview of the docfex search functionality:
+![docfex Search](doc/Images/UsagePreview/search_features.gif)
+
+#### Preview of the phone layout and audio/video embedded feature
+docfex phone layout            |  docfex embedded audio/video
+:-------------------------:|:-------------------------:
+![](doc/Images/UsagePreview/phone_layout.gif) |  ![](doc/Images/UsagePreview/embed_feature.gif)
 
 
 ## Contribution
