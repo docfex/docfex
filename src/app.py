@@ -1,7 +1,7 @@
-from flask import render_template, Markup, send_from_directory, url_for, redirect, session, request, g, abort, current_app
+from flask import render_template, Markup, send_from_directory, url_for, session, request, g, abort, current_app
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import Search
-from src.config.config import base_path, dir_breaks, SECRET_KEY, recent_topic_len, es_host, es_port, flask_hostname, flask_port, root_web_path
+from src.config.config import base_path, dir_breaks, SECRET_KEY, recent_topic_len, es_host, es_port, flask_hostname, flask_port, root_web_path, file_upload_path
 from src.topics import topics, folder_group, file_group
 from src.elastic.setup import ElasticSettings
 from src.elastic.sync import sync_elastic
@@ -26,14 +26,12 @@ def start_flask(debug=False):
     '''
     app = current_app._get_current_object()
     app.secret_key = SECRET_KEY
-    # localhost as Servername hack to serve ip addresses aswell
-    app.config['SERVER_NAME'] = 'localhost' + ':' + str(flask_port)
     app.static_folder = 'src/static'
     app.template_folder = 'src/templates'
     app.before_first_request(bef_first_request)
     app.before_request(before_request)
     app.add_url_rule(root_web_path, 'home', home)
-    app.add_url_rule(root_web_path + 'fakeUpload/<path:file_and_path>', 'get_local_file', get_local_file)
+    app.add_url_rule(root_web_path + file_upload_path + '/<path:file_and_path>', 'get_local_file', get_local_file)
     app.add_url_rule(root_web_path + 'fakeEmbed/<path:file_and_path>', 'get_embed_file', get_embed_file)
     app.add_url_rule(root_web_path + 'Settings', 'settings', settings, methods=['POST', 'GET'])
     app.add_url_rule(root_web_path + '<path:subpath>', 'sub_pages', sub_pages)
