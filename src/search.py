@@ -70,7 +70,7 @@ def _search_in_files(searchterm, found_terms, filter_query, exclude_fields):
     '''
     Searches the searchterm inside supported text files
     '''
-    es_indices = get_es_indices(es_client)
+    es_indices = get_es_indices()
     search_indices = []
     if 'pdf' in es_indices:
         search_indices.append('pdf')
