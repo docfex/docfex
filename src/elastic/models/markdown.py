@@ -1,5 +1,6 @@
 from elasticsearch_dsl import Index, InnerDoc, MetaField
 from elasticsearch_dsl.field import Text, Object
+from elasticsearch import TransportError
 from .attachments import AttachmentDoc, AttachmentEncDoc, ingest_attachment, attachment_fields
 from .base import index_settings, EsBase, BaseDoc
 from src.config.config import web_icons
@@ -99,7 +100,16 @@ class EsMarkdown(EsBase):
             last_modified=self._own_obj.last_modified, os_size=self._own_obj.os_size,
             mimetype=self._own_obj.mimetype)
         
-        return self._own_doc.save(pipeline=pipe, ** kwargs)    
+        # if markdown can't be read, index without content
+        created = False
+        try:
+            created = self._own_doc.save(pipeline=pipe, ** kwargs)
+        except TransportError:
+            empty_enc_doc = AttachmentEncDoc(id=self.es_id, enc_attachment=base64.b64encode(b'indexing failed').decode('ascii'))
+            self._own_doc.encoded_obj = empty_enc_doc
+            created = self._own_doc.save()
+
+        return created    
 
     def get(self, _source_exclude=[], ** kwargs):
         '''
