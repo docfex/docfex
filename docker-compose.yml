@@ -17,7 +17,6 @@ services:
     ports:
       - 9200:9200
     networks:
-      - esnet
       - docfex-net
   elastic2:
     image: manuelhatzl/elasticsearch_ingestattachment:6.7.1
@@ -35,7 +34,7 @@ services:
     volumes:
       - esdata2:/usr/share/elasticsearch/data
     networks:
-      - esnet
+      - docfex-net
   docfex:
     image: manuelhatzl/docfex:latest
     container_name: docfex
@@ -57,5 +56,4 @@ volumes:
     driver: local
 
 networks:
-  esnet:
   docfex-net:

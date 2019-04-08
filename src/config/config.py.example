@@ -43,7 +43,7 @@ recent_topic_len = 5
 #######################################################################################################
 
 # Host and port to connect to elasticsearch
-# When using docker, set es_host = <container name of elastic>
+# When using docker, set es_hosts = ['<container name of elastic>','<every additionaö elastic container>']
 # Note: A docker bridge network must be created to connect elastic with flask
 es_hosts = ['localhost']
 es_port = 9200

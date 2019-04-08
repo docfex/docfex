@@ -5,7 +5,7 @@ This file is based on the Elasticsearch *docker-compose.yml* file from their ins
 ## Docker networking
 For docfex to be able to communicate with Elasticsearch, a docker network called *docfex-net* is defined for the first Elasticsearch container, and used again by docfex. This allows both containers to communicate.
 
-**Note:** The es_host inside *config.py* must be set to the containername defined for the first Elasticsearch container (*elastic* in this example). Otherwise docfex can't connect to Elasticsearch.
+**Note:** es_hosts list inside *config.py* must include containernames defined for the first Elasticsearch containers (*elastic* and *elastic2* in this example). Otherwise docfex can't connect to Elasticsearch.
 
 For more info on docker networking, see [Docker Networking](https://docs.docker.com/network/)
 
