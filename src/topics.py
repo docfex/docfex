@@ -3,6 +3,7 @@ from src.config.config import base_path, dir_breaks, supp_mime_types, root_web_p
 from .models.web_file import web_file
 from .models.web_folder import web_folder
 from src.elastic.models.attachments import attachment_fields
+from src.elastic.setup import es_client
 import os
 import mimetypes
 
@@ -12,12 +13,12 @@ class topics:
     Files are saved with their mimetype
     '''
     @staticmethod
-    def get_root_topiclist(es_client):
+    def get_root_topiclist():
         '''
         Returns a list of folders in the root path
         '''
         root_topics = []
-        res = topics._find_topics(es_client, root_web_path)
+        res = topics._find_topics(root_web_path)
         for hit in res:
             if hit.meta.doc_type == folder_group:
                 folder = web_folder(hit.web_path, hit.name, hit.web_icon)
@@ -42,7 +43,7 @@ class topics:
             topic_dict[file_group].append(wf)
 
     @staticmethod
-    def _find_topics(es_client, parent_path):
+    def _find_topics(parent_path):
         '''
         Returns a list of topics that have the same parent
         '''
@@ -56,8 +57,7 @@ class topics:
         cnt = s.count()
         return s[:cnt].execute()
 
-    def __init__(self, es_client, topic_parent_path=root_web_path):
-        self.es_client = es_client
+    def __init__(self, topic_parent_path=root_web_path):
         self.topic_parent_path = topic_parent_path
         self.base_topics = {}
         self.get_base_topics()
@@ -68,7 +68,7 @@ class topics:
         '''
         Gets folders and files from the current path
         '''
-        res = topics._find_topics(self.es_client, self.topic_parent_path)
+        res = topics._find_topics(self.topic_parent_path)
         for hit in res:
             topics._split_file_folder(hit, self.base_topics)
 
@@ -78,12 +78,10 @@ class topics:
         '''
         if folder_group in self.base_topics:
             for folder in self.base_topics[folder_group]:
-                res = topics._find_topics(self.es_client, folder.path)
+                res = topics._find_topics(folder.path)
                 for hit in res:
                     if not(folder.name in self.sub_topics):
                         self.sub_topics[folder.name] = {}
                     
                     topics._split_file_folder(hit, self.sub_topics[folder.name])
-
-
 

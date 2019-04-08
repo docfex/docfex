@@ -14,7 +14,7 @@ Since docfex basically is a gateway between Flask and Elasticsearch, there is no
 
 **2. Logging**</br>
 Besides testing, logging should also be improved. 
-Currently information is simply outputted using print().
+Currently information is simply outputted to the root console using the base logger.
 
 
 **Note:** Until testing and logging is not improved, no other features are added!

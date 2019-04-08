@@ -4,10 +4,12 @@ from elasticsearch.exceptions import TransportError
 from urllib3.exceptions import NewConnectionError
 from elasticsearch.client.cat import CatClient
 from src.config.config import es_host, es_port
+import logging
 import sys
-import asyncio 
+import time 
 
 used_es_indices = ['markdown', 'pdf', 'audio', 'video', 'folder']
+es_client = connections.create_connection(host=es_host, port=es_port, timeout=60)
 
 class ElasticSettings:
     '''
@@ -25,29 +27,31 @@ def setup_elastic():
     '''
     Creates a connection to elastic and initialises all needed documents
     '''
+    # lvl set to ERROR while connecting, to not get filled with disconnected warnings
+    logging.getLogger("elasticsearch").setLevel(logging.ERROR)
+
     es_connect_timeout = 0
     connected_to_es = False
     while (connected_to_es == False):
         try:
-            es_client = connections.create_connection(host=es_host, port=es_port, timeout=60)
-            es_act_indices = get_es_indices(es_client)
+            es_act_indices = get_es_indices()
             connected_to_es = True
-        except (TransportError, NewConnectionError, ConnectionRefusedError):
+        except (ConnectionError, TransportError):
             es_connect_timeout += 1
-            if es_connect_timeout < 60:
-                print('Can\'t connect to elastic, retrying in 1 second')
-                asyncio.run(asyncio.sleep(1))
+            if es_connect_timeout < 50:
+                logging.warning('Can\'t connect to elastic, retrying in 10 seconds')
+                time.sleep(10)
             else:
-                print('Failed to connect to elastic')
+                logging.critical('Failed to connect to elastic')
                 sys.exit()
+
+    logging.getLogger("elasticsearch").setLevel(logging.WARNING)
 
     _init_doc(folder.FolderDoc, es_act_indices)
     _init_doc(audio.AudioDoc, es_act_indices)
     _init_doc(video.VideoDoc, es_act_indices)
     _init_doc(pdf.PdfDoc, es_act_indices)
     _init_doc(markdown.MarkdownDoc, es_act_indices)
-
-    return es_client
 
 
 def _is_used_index(found_es_index):
@@ -59,11 +63,11 @@ def _is_used_index(found_es_index):
     else:
         return False
 
-def get_es_indices(client):
+def get_es_indices():
     '''
     Returns a list of all found indices in elastic
     '''
-    cat = CatClient(client)
+    cat = CatClient(es_client)
     res = cat.indices(params={'h': 'index'})
     if not(res):
         return []
