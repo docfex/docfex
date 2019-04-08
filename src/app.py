@@ -1,7 +1,7 @@
 from flask import render_template, Markup, send_from_directory, url_for, session, request, abort, current_app
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import Search
-from src.config.config import base_path, dir_breaks, SECRET_KEY, recent_topic_len, es_host, es_port, flask_hostname, flask_port, root_web_path, file_upload_path
+from src.config.config import base_path, dir_breaks, SECRET_KEY, recent_topic_len, flask_hostname, flask_port, root_web_path, file_upload_path
 from src.topics import topics, folder_group, file_group
 from src.elastic.setup import ElasticSettings, es_client
 from src.elastic.sync import sync_elastic

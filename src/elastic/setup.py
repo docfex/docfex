@@ -3,13 +3,13 @@ from elasticsearch_dsl.connections import connections
 from elasticsearch.exceptions import TransportError
 from urllib3.exceptions import NewConnectionError
 from elasticsearch.client.cat import CatClient
-from src.config.config import es_host, es_port
+from src.config.config import es_hosts, es_port
 import logging
 import sys
 import time 
 
 used_es_indices = ['markdown', 'pdf', 'audio', 'video', 'folder']
-es_client = connections.create_connection(host=es_host, port=es_port, timeout=60)
+es_client = connections.create_connection(hosts=es_hosts, port=es_port, timeout=60)
 
 class ElasticSettings:
     '''
