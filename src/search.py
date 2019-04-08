@@ -1,6 +1,6 @@
 from src.config.config import preview_len, file_group, folder_group, max_found_names, max_found_content
 from src.elastic.models.attachments import attachment_fields
-from .elastic.setup import get_es_indices
+from .elastic.setup import get_es_indices, es_client
 from flask import Markup, session
 from .models.web_file import web_file
 from .models.web_folder import web_folder
@@ -18,7 +18,7 @@ class SearchSettings:
         self.search_in_subfiles = search_in_subfiles
 
 
-def get_search_result(es_client, searchterm, search_type, search_path):
+def get_search_result(searchterm, search_type, search_path):
     '''
     Returns a list of hits from elastic that matched the searchterm
     '''
@@ -32,16 +32,16 @@ def get_search_result(es_client, searchterm, search_type, search_path):
     found_terms = {}
     exclude_fields = attachment_fields[:]
     exclude_fields.append('saved_md')
-    _search_file_foldername(es_client, searchterm, found_terms, filter_q, exclude_fields)
+    _search_file_foldername(searchterm, found_terms, filter_q, exclude_fields)
     if (session['settings']['global_search_in_files']) or (search_type == file_group) \
             or ((search_type == folder_group) and (session['settings']['search_in_subfiles'])):
         
-        _search_in_files(es_client, searchterm, found_terms, filter_q, exclude_fields)
+        _search_in_files(searchterm, found_terms, filter_q, exclude_fields)
     
     return found_terms
 
 
-def _search_file_foldername(es_client, searchterm, found_terms, filter_query, exclude_fields):
+def _search_file_foldername(searchterm, found_terms, filter_query, exclude_fields):
     '''
     Searches only for file/foldernames that match the searchterm
     '''
@@ -66,7 +66,7 @@ def _search_file_foldername(es_client, searchterm, found_terms, filter_query, ex
             found_terms[file_group].append(wf)
 
 
-def _search_in_files(es_client, searchterm, found_terms, filter_query, exclude_fields):
+def _search_in_files(searchterm, found_terms, filter_query, exclude_fields):
     '''
     Searches the searchterm inside supported text files
     '''

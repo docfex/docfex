@@ -1,9 +1,9 @@
-from flask import render_template, Markup, send_from_directory, url_for, session, request, g, abort, current_app
+from flask import render_template, Markup, send_from_directory, url_for, session, request, abort, current_app
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import Search
 from src.config.config import base_path, dir_breaks, SECRET_KEY, recent_topic_len, es_host, es_port, flask_hostname, flask_port, root_web_path, file_upload_path
 from src.topics import topics, folder_group, file_group
-from src.elastic.setup import ElasticSettings
+from src.elastic.setup import ElasticSettings, es_client
 from src.elastic.sync import sync_elastic
 from src.elastic.models.attachments import attachment_fields
 from src.search import get_search_result, SearchSettings
@@ -29,7 +29,6 @@ def start_flask(debug=False):
     app.static_folder = 'src/static'
     app.template_folder = 'src/templates'
     app.before_first_request(bef_first_request)
-    app.before_request(before_request)
     app.add_url_rule(root_web_path, 'home', home)
     app.add_url_rule(root_web_path + file_upload_path + '/<path:file_and_path>', 'get_local_file', get_local_file)
     app.add_url_rule(root_web_path + 'fakeEmbed/<path:file_and_path>', 'get_embed_file', get_embed_file)
@@ -94,17 +93,6 @@ def bef_first_request():
             }
     if not('recent' in session):
         session['recent'] = []
-
-
-def before_request():
-    '''
-    Defines actions that are run before every request
-    '''
-    if not('es_client' in g):
-        g.es_client = connections.create_connection(
-            host=es_host, port=es_port, timeout=60)
-    if not('header' in g):
-        g.header = header(g.es_client)
     
 
 def is_path_valid(path):
@@ -168,8 +156,8 @@ def search_requested(f):
                 search_type = ''
                 search_path = root_web_path
 
-            search_results = get_search_result(g.es_client, searchterm, search_type, search_path)
-            return render_template('search_result.html', header=g.header, search_results=search_results, len=len)
+            search_results = get_search_result(searchterm, search_type, search_path)
+            return render_template('search_result.html', header=header(), search_results=search_results, len=len)
 
         return f(*args, **kwargs)
     return search_locally
@@ -180,10 +168,10 @@ def home():
     '''
     Defaults to the mainpage
     '''
-    t = topics(g.es_client)
+    t = topics()
     recent_topics = get_recent_topics()
     return render_template('index.html', base_topics=t.base_topics, sub_topics=t.sub_topics, \
-        header=g.header, len=len, recent_topics=recent_topics)
+        header=header(), len=len, recent_topics=recent_topics)
 
 
 def get_subpage(subpath):
@@ -191,7 +179,7 @@ def get_subpage(subpath):
     Returns the requested topic saved in elastic, or None if it wasn't found
     '''
     try:
-        s = Search(using=g.es_client).query('match', web_path=subpath)
+        s = Search(using=es_client).query('match', web_path=subpath)
         s = s.source(exclude=attachment_fields)
         res = s[0].execute()
         return None if (res.hits.total == 0) else res.hits[0]
@@ -221,21 +209,21 @@ def sub_pages(subpath=None):
         if first_hit.meta.index == 'markdown':
             headings = json.loads(first_hit.saved_md.header_ids)
             return render_template('md_content.html', md_content=Markup(first_hit.saved_md.converted_html),
-                                   header=g.header, headings=headings, curr_topic=first_hit.name)
+                                   header=header(), headings=headings, curr_topic=first_hit.name)
         elif first_hit.meta.index == 'pdf':
             pdf_src = url_for('get_embed_file', file_and_path=norm_subpath)
             return render_template('pdf_content.html', pdf_src=pdf_src)
         elif first_hit.meta.index == 'audio':
-            return render_template('audio.html', file_and_path=norm_subpath, type=first_hit.mimetype, header=g.header)
+            return render_template('audio.html', file_and_path=norm_subpath, type=first_hit.mimetype, header=header())
         elif first_hit.meta.index == 'video':
-            return render_template('video.html', file_and_path=norm_subpath, type=first_hit.mimetype, header=g.header)
+            return render_template('video.html', file_and_path=norm_subpath, type=first_hit.mimetype, header=header())
         else:
             remove_from_recent_topics()
             return abort(404)    
     elif first_hit.meta.doc_type == folder_group:
-        sub_t = topics(g.es_client, first_hit.web_path)
+        sub_t = topics(first_hit.web_path)
         return render_template("subsection.html", base_topics=sub_t.base_topics, sub_topics=sub_t.sub_topics,
-                               section=norm_subpath, header=g.header, len=len)
+                               section=norm_subpath, header=header(), len=len)
     else:
         return abort(404)
 
@@ -258,7 +246,7 @@ def settings():
         session['es_settings']['update_pdf'], session['es_settings']['update_audio'], 
         session['es_settings']['update_video'], session['es_settings']['update_folder'])
     
-    return render_template('settings.html', header=g.header, search_sets=s, es_sets=es_settings)
+    return render_template('settings.html', header=header(), search_sets=s, es_sets=es_settings)
 
 
 def update_search_settings(form_data):
@@ -301,8 +289,7 @@ def update_elastic(update_indices):
     '''
     es_sync_scheduler.add_job(
         sync_elastic, id='update_es', kwargs=
-        {'es_client': g.es_client,
-        'app': current_app._get_current_object(), 
+        {'app': current_app._get_current_object(), 
         'update_indices': update_indices}
         )
     if not(es_sync_scheduler.running):

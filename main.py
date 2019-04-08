@@ -26,11 +26,11 @@ def start_elastic():
     '''
     Connects to elastic and creates a background job to kepp elastic and os in sync
     '''
-    client = setup_elastic()
+    setup_elastic()
     # omitting a trigger removes the job from the job pool, but interval trigger first waits for the interval to finish before execution
     # => using cron first, then reschedule to interval to start job immediately  
     es_sync_scheduler.add_job(sync_elastic, id=es_job_id,
-                              trigger='cron', second='*/10', kwargs={'es_client': client, 'app': app})
+                              trigger='cron', second='*/10', kwargs={'app': app})
     es_sync_scheduler.add_listener(job_end_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
     if not(es_sync_scheduler.running):
         es_sync_scheduler.start()

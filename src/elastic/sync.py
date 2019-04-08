@@ -2,7 +2,7 @@ from elasticsearch.exceptions import NotFoundError
 from elasticsearch_dsl import Search
 from src.config.config import base_path, dir_breaks, supp_mime_types, root_web_path, folder_group
 from .models import markdown, folder, pdf, audio, video, base
-from .setup import get_es_indices
+from .setup import get_es_indices, es_client
 from apscheduler.schedulers.background import BackgroundScheduler
 from multiprocessing import Lock, Event
 from datetime import datetime
@@ -38,7 +38,7 @@ def close_scheduler():
         es_sync_scheduler.shutdown(wait=True)
 
 
-def sync_elastic(es_client, app, update_indices=[]):
+def sync_elastic(app, update_indices=[]):
     '''
     Syncs the elastic server with the os.
     :param update_indices: Can be used to update certain types inside elasticsearch (like pdf, folder,...).
@@ -62,17 +62,17 @@ def sync_elastic(es_client, app, update_indices=[]):
                     if end_event.is_set():
                         raise EndEventError('end requested in os.walk-loop')
 
-            asyncio.run(_delete_moved_items(es_client, synced_items))
+            asyncio.run(_delete_moved_items(synced_items))
     except (EndEventError) as error:
         print(error.message)
         raise
 
 
-async def _delete_moved_items(es_client, valid_items):
+async def _delete_moved_items(valid_items):
     '''
     Delete items that are in elastic, but not anymore on the os
     '''
-    es_indices = get_es_indices(es_client)
+    es_indices = get_es_indices()
     if not(valid_items):
         # no items saved -> os is empty, drop elastic
         s = Search(index=es_indices).query('match_all')
