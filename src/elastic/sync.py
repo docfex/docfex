@@ -6,6 +6,7 @@ from .setup import get_es_indices, es_client
 from apscheduler.schedulers.background import BackgroundScheduler
 from multiprocessing import Lock, Event
 from datetime import datetime
+import logging
 import mimetypes
 import asyncio
 import os
@@ -33,7 +34,7 @@ def close_scheduler():
     '''
     if not(end_event.is_set()):
         end_event.set()
-    print('end scheduler')
+    logging.info('end scheduler')
     if es_sync_scheduler.running:
         es_sync_scheduler.shutdown(wait=True)
 
@@ -48,7 +49,7 @@ def sync_elastic(app, update_indices=[]):
         if end_event.is_set():
             raise EndEventError('end requested before execution')
         with sync_lock:
-            print('sync elastic')
+            logging.info('sync elastic')
             synced_items = []
             with app.app_context():
                 for path, folders, files in os.walk(base_path):
@@ -64,7 +65,7 @@ def sync_elastic(app, update_indices=[]):
 
             asyncio.run(_delete_moved_items(synced_items))
     except (EndEventError) as error:
-        print(error.message)
+        logging.warning(error.message)
         raise
 
 
@@ -112,7 +113,7 @@ def _delete_doc_by_query(setup_search):
     if not(res):
         return
     for h in res:
-        print('Deleting doc ' + h.web_path)
+        logging.warning('Deleting doc ' + h.web_path)
     setup_search.delete()
 
 
@@ -157,7 +158,7 @@ async def _sync_folders(folders, os_path, web_path, previous_path, update_indice
         saved = await _save_doc(es_folder, force_update)
         saved_folders.append(cmb_web_path)
         if not(saved):
-            print(es_folder.own_obj.web_path + 'couldn\'t be saved')
+            logging.error(es_folder.own_obj.web_path + 'couldn\'t be saved')
     
     return saved_folders  
 
@@ -198,7 +199,7 @@ async def _sync_files(files, os_path, web_path, previous_path, update_indices):
         saved = await _save_doc(es_file, force_update)
         saved_files.append(cmb_web_path)
         if not(saved):
-            print(es_file.own_obj.web_path + 'couldn\'t be saved')
+            logging.error(es_file.own_obj.web_path + 'couldn\'t be saved')
             
     return saved_files
         
@@ -216,7 +217,7 @@ async def _save_doc(doc, force_update=False):
     doc.save()
     saved = await _doc_saved(doc)
     if saved:
-        print('Successfully saved doc ' + doc.own_obj.web_path)
+        logging.info('Successfully saved doc ' + doc.own_obj.web_path)
     return saved
 
 

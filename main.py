@@ -6,6 +6,7 @@ from src.app import start_flask
 from apscheduler.events import EVENT_JOB_ERROR, EVENT_JOB_EXECUTED
 from src.elastic.sync import es_sync_scheduler, close_scheduler, EndEventError, es_job_id
 import multiprocessing
+import logging
 import signal
 import sys
 
@@ -17,6 +18,7 @@ def start_server(flask_debug=False):
     '''
     Starts docfex
     '''
+    logging.basicConfig(level=logging.WARNING)
     start_elastic()
     with app.app_context():
         start_flask(debug=flask_debug)
@@ -43,17 +45,17 @@ def job_end_listener(job_event):
     if job_event.exception:
         if type(job_event.exception) == EndEventError:
             sys.exit()
-        print('scheduled job crashed')
+        logging.critical('scheduled job crashed')
         raise job_event.exception
     else:
         es_job = es_sync_scheduler.get_job(job_event.job_id)
         if (es_job == None) or (es_job_id != job_event.job_id):
             return
         
-        print('scheduled job closed successfully')
+        logging.info('scheduled job closed successfully')
         if es_sync_scheduler.running:
             es_job.reschedule(trigger='interval', minutes=sync_interval)
-            print('rescheduled job')
+            logging.info('rescheduled job')
 
         
 if __name__ == '__main__':
