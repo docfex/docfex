@@ -27,6 +27,10 @@ flask_port = 5000
 # e.g. root_web_path = '/docfex/' (Note: ending / is mandatory)
 root_web_path = '/'
 
+# url addition to upload files on the OS
+# Note: don't add / at start or end!
+file_upload_path = 'fakeUpload'
+
 # Secret key flask uses for session cookies
 SECRET_KEY = r'<generate e.g. with "os.urandom(24)>"'
 

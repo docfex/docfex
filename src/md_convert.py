@@ -1,5 +1,4 @@
-from flask import url_for, current_app
-from src.config.config import base_path, dir_breaks
+from src.config.config import base_path, dir_breaks, root_web_path, file_upload_path
 import re
 import markdown
 
@@ -74,7 +73,8 @@ def link_images(base_html, filename):
     filename = '/'.join(filename.split('/')[:-1]).replace(dir_breaks, '/')
     for m in re.finditer(r'<img[\w\W]*?src=\"((?!(https=|ftp):)[\w\/.]+?)\"\s/>', base_html):
         web_filepath = filename + '/' + m.group(1)
-        data_link = url_for('get_local_file', file_and_path=web_filepath)
+        # url hardcoded since outside flask scope
+        data_link = root_web_path + file_upload_path + '/' + web_filepath
         bootified_html += base_html[last_found:m.start(1)] + data_link + base_html[m.end(1):m.end(0)]
         last_found = m.end(0)
         
