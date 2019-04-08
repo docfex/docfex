@@ -95,13 +95,9 @@ class EsPdf(EsBase):
         try:
             created = self._own_doc.save(pipeline=pipe, ** kwargs)
         except TransportError:
-            enc_doc = AttachmentEncDoc(id=self.es_id, enc_attachment=base64.b64encode(b'indexing failed').decode('ascii'))
-            base_doc = PdfDoc(meta={'id': self.es_id}, name=self._own_obj.name,
-            web_path=self._own_obj.web_path, web_icon=self._own_obj.web_icon,
-            parent_path=self._own_obj.parent_path, encoded_obj=enc_doc,
-            last_modified=self._own_obj.last_modified, os_size=self._own_obj.os_size,
-            mimetype=self._own_obj.mimetype)
-            created = base_doc.save()
+            empty_enc_doc = AttachmentEncDoc(id=self.es_id, enc_attachment=base64.b64encode(b'indexing failed').decode('ascii'))
+            self._own_doc.encoded_obj = empty_enc_doc
+            created = self._own_doc.save()
 
         return created
 
