@@ -13,6 +13,7 @@ from elasticsearch.exceptions import TransportError
 from urllib3.exceptions import NewConnectionError
 from functools import wraps
 from gevent.pywsgi import WSGIServer
+import logging
 import sys
 import re
 import os
@@ -184,7 +185,7 @@ def get_subpage(subpath):
         res = s[0].execute()
         return None if (res.hits.total == 0) else res.hits[0]
     except (TransportError, NewConnectionError, ConnectionRefusedError):
-        print('Can\'t connect to elastic from flask')
+        logging.critical('Can\'t connect to elastic from flask')
         sys.exit()
 
 
