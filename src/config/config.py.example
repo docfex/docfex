@@ -47,6 +47,8 @@ recent_topic_len = 5
 # Note: A docker bridge network must be created to connect elastic with flask
 es_hosts = ['localhost']
 es_port = 9200
+# timeout in seconds
+es_timeout = 120
 
 # Define how often elastic gets synced with the os [min]
 # Note: for big directories you might want to increase this value
