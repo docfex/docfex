@@ -1,13 +1,17 @@
 version: '3'
 services:
   elastic:
-    image: manuelhatzl/elasticsearch_ingestattachment:6.7.1
+    image: manuelhatzl/elasticsearch_ingestattachment:7.3.0
     container_name: elastic
+    restart: always
     environment:
+      - node.name=elastic
+      - discovery.seed_hosts=elastic2
+      - cluster.initial_master_nodes=elastic,elastic2
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
-      - http.max_content_length=1.7gB
+      - http.max_content_length=1700MB
     ulimits:
       memlock:
         soft: -1
@@ -19,14 +23,17 @@ services:
     networks:
       - docfex-net
   elastic2:
-    image: manuelhatzl/elasticsearch_ingestattachment:6.7.1
+    image: manuelhatzl/elasticsearch_ingestattachment:7.3.0
     container_name: elastic2
+    restart: always
     environment:
+      - node.name=elastic2
+      - discovery.seed_hosts=elastic
+      - cluster.initial_master_nodes=elastic,elastic2
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
-      - "discovery.zen.ping.unicast.hosts=elasticsearch"
-      - http.max_content_length=1.7gB
+      - http.max_content_length=1700MB
     ulimits:
       memlock:
         soft: -1
@@ -38,6 +45,7 @@ services:
   docfex:
     image: manuelhatzl/docfex:latest
     container_name: docfex
+    restart: always
     depends_on:
       - elastic
       - elastic2

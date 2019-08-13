@@ -48,17 +48,17 @@ def _search_file_foldername(searchterm, found_terms, filter_query, exclude_field
     searchterm = searchterm.lower()
     q = Q('match', name=searchterm) | Q('query_string', default_field='name', query=searchterm)
     s = Search(using=es_client).query(q).sort('_score')
-    s = s.source(exclude=exclude_fields)
+    s = s.source(excludes=exclude_fields)
     if filter_query != None:
         s = s.filter(filter_query)
     res = s[0:max_found_names].execute()
     for hit in res:
-        if hit.meta.doc_type == folder_group:
+        if hit.meta.index == folder_group:
             if not (folder_group in found_terms):
                 found_terms[folder_group] = []
             folder = web_folder(hit.web_path, hit.name, hit.web_icon)
             found_terms[folder_group].append(folder)
-        elif hit.meta.doc_type == file_group:
+        else:
             if not (file_group in found_terms):
                 found_terms[file_group] = []
             wf = web_file(hit.web_path, hit.name, hit.meta.index,
@@ -81,7 +81,7 @@ def _search_in_files(searchterm, found_terms, filter_query, exclude_fields):
 
     q = Q('query_string', default_field='stored_attachment.content', query=searchterm)
     s = Search(using=es_client, index=search_indices).query(q).sort('_score')
-    s = s.source(exclude=exclude_fields)
+    s = s.source(excludes=exclude_fields)
     s = s.highlight_options(pre_tags='<em class="hl-found">', post_tags='</em>')
     s = s.highlight('stored_attachment.content', fragment_size=preview_len)
     if filter_query != None:

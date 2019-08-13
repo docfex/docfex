@@ -13,11 +13,9 @@ class AudioDoc(BaseDoc):
     '''
     class Meta:
         dynamic = MetaField('strict')
-        doc_type = AudioSettings._type
 
     class Index:
         name = AudioSettings._index
-        doc_type = AudioSettings._type
         settings = index_settings
 
 class EsAudio(EsBase):
