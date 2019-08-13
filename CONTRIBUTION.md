@@ -2,7 +2,7 @@
 Docfex is in early development, so any kind of contribution is welcome.
 
 ## Code style
-* Try to adhere to the SOLID principles and keep your code DRY.
+* Try to keep your code DRY.
 * Name variables, functions and classes so they are self explanatory and need no comments.
 * Functions and classes used in more than one file must be commented.
 

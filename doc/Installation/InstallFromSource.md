@@ -1,7 +1,8 @@
 # Installing docfex from source
 Docfex requires a Elasticsearch database to be reachable. You can define the connection to Elastic inside [config.py](/src/config/config.py.example). Since private credentials are stored inside config.py you need to create it yourself. A template is given as [config.py.example](/src/config/config.py.example).
 
-**Note:** Makre sure Elasticsearch is reachable before starting docfex.
+**Note:** Make sure Elasticsearch is reachable before starting docfex.
+**Note:** Make sure Redis is reachable before starting docfex
 
 **Note:** When installing docfex from source, you need to have at least python **3.7.1** installed!
 Otherwise you won't be able to run it!

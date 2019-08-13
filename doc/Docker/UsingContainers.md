@@ -1,9 +1,10 @@
 # Setting up Docfex using docker containers
-Docfex can be setup using two docker containers.
+Docfex can be setup using three docker containers.
 * One for Elasticsearch
+* One for Redis
 * One for docfex/Flask
 
-Since Elasticsearch is on a separate container, a connection must be setup so both containers can communicate.
+Since Elasticsearch and Redis are on a separate containers, a connection must be setup so both containers can communicate.
 For that a docker bridge network is used.
 
 ## 1. Setup the docker network
@@ -20,7 +21,7 @@ sudo docker network ls
 In the resulting list of networks, you should see **docfex-net**
 
 ## 2. Start the Elasticsearch container
-Docfex needs the ingest attachment plugin for Elasticsearch, since Pdf and Markdown documents are stored in Elasticsearch. The official docker image of Elasticsearch doesn't ship with this plugin, so you need to use a image that does. This example uses the image from [manuelhatzl/elasticsearch_ingestattachment](https://cloud.docker.com/u/manuelhatzl/repository/docker/manuelhatzl/elasticsearch_ingestattachment). The image is based on Elasticsearch 6.7.1.
+Docfex needs the ingest attachment plugin for Elasticsearch, since Pdf and Markdown documents are stored in Elasticsearch. The official docker image of Elasticsearch doesn't ship with this plugin, so you need to use a image that does. This example uses the image from [manuelhatzl/elasticsearch_ingestattachment](https://cloud.docker.com/u/manuelhatzl/repository/docker/manuelhatzl/elasticsearch_ingestattachment). The image is based on Elasticsearch 7.3.1.
 
 There are many different options on how to run the Elasticsearch docker image. Below is a simple one that creates a daemon container and connects to the previously generated network. To keep data over a container restart, a docker volume is mounted to */home/user/elastic* in which all Elasticsearch data will be saved.
 
@@ -28,19 +29,27 @@ There are many different options on how to run the Elasticsearch docker image. B
 sudo docker run -d -e "discovery.type=single-node" \
 --name elastic --network docfex-net \
 -v /home/user/elastic:/usr/share/elasticsearch/data \
-manuelhatzl/elasticsearch_ingestattachment:6.7.1
+manuelhatzl/elasticsearch_ingestattachment:7.3.1
 ```
 
 **Note:** Depending on document sizes, you most definitely need to increase the heap size Elasticsearch can use. Checkout [Elasticsearch configuring the heap size](https://www.elastic.co/guide/en/elasticsearch/reference/current/heap-size.html) for more information.
 
-## 3. Start the Docfex/Flask container
-This container holds the main application. It synchronises the OS with Elasticsearch and serves the website using Flask.
+## 3. Start the Redis container
+To store session informations of connected clients, Redis is set as session interface for Flask. The URL to the Redis cache is set in config.py (e.g. [src/config/config.py.example](/src/config/config.py.example)).
 
-**Note:** This container requires that the Elasticsearch container is up and Elasticsearch is running!
+With the following command you can setup a Redis container:
+```
+sudo docker run -d -p 6379:6379 --network docfex-net --name redis redis:latest
+```
+
+## 4. Start the Docfex/Flask container
+This container holds the main application. It synchronises the OS with Elasticsearch and Redis, and serves the website using Flask.
+
+**Note:** This container requires that the Elasticsearch and Redis containers are up!
 
 To create the docker image for Docfex, you can either create it yourself by using the main Dockerfile, or you can use the image under [manuelhatzl/docfex:latest](https://cloud.docker.com/repository/list)
 
-The following command sets up a docker container as daemon providing port 5000 to the host. The previously created docker network is provided so docfex can connect to the elastic container. Since connection and port of Flask and Elasticsearch as well as the secret session key should/must be configurable, you must specify your own *config.py* file and place it in a folder that is mounted to */opt/docfex/src/config*.
+The following command sets up a docker container as daemon providing port 5000 to the host. The previously created docker network is provided so docfex can connect to the elastic and redis containers. Since connection and port of Flask, Redis and Elasticsearch as well as the secret session key should/must be configurable, you must specify your own *config.py* file and place it in a folder that is mounted to */opt/docfex/src/config*.
 An example of a possible *config.py* file can be found under [src/config/config.py.example](/src/config/config.py.example). The use of docfex is to parse a large directory, that can then be searched using Elasticsearch. As before with config.py, you can provide the mount point to the directory that will be parsed, by mounting it to */mnt/basepath*.
 
 ```

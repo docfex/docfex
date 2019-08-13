@@ -7,7 +7,7 @@ The backend is using python [Flask](http://flask.pocoo.org/) and [Elasticsearch-
 
 
 ## Installation
-Docfex needs access to a Elasticsearch database. If you already have one setup
+Docfex needs access to Redis and a Elasticsearch database. If you already have those setup
 , you can skip the part to setup Elasticsearch.
 
 **Note:** Docfex will create indeces to store its document as soon as you start docfex!
@@ -24,7 +24,7 @@ sudo docker-compose up
 
 **Note:** For more information on running docfex using *docker-compose*, see [using docker-compose](doc/Docker/UsingDockerCompose.md).
 
-**Note:** Docfex can also be installed by simply creating an elastic and one docfex docker container.
+**Note:** Docfex can also be installed by simply creating one elastic, one redis and one docfex docker container.
 For more on running docfex using docker containers, see [using docker containers](doc/Docker/UsingContainers.md).
 
 
