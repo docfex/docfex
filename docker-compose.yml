@@ -49,11 +49,21 @@ services:
     depends_on:
       - elastic
       - elastic2
+      - redis      
     volumes:
       - /home/mhatzl/docfex/config:/opt/docfex/src/config
       - /home/mhatzl/Documents/BigDir:/mnt/basepath
     ports:
       - 5000:5000
+    networks:
+      - docfex-net
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    expose:
+      - 6379
     networks:
       - docfex-net
 

@@ -1,7 +1,7 @@
 from flask import render_template, Markup, send_from_directory, url_for, session, request, abort, current_app
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import Search
-from src.config.config import base_path, dir_breaks, SECRET_KEY, recent_topic_len, flask_hostname, flask_port, root_web_path, file_upload_path
+from src.config.config import base_path, dir_breaks, FLASK_SECRET_KEY, recent_topic_len, flask_hostname, flask_port, root_web_path, file_upload_path
 from src.topics import topics, folder_group, file_group
 from src.elastic.setup import ElasticSettings, es_client
 from src.elastic.sync import sync_elastic
@@ -13,11 +13,14 @@ from elasticsearch.exceptions import TransportError
 from urllib3.exceptions import NewConnectionError
 from functools import wraps
 from gevent.pywsgi import WSGIServer
+from flask_session import Session
+from src.flasksession import SessionConfig
 import logging
 import sys
 import re
 import os
 import json
+
 
 
 def start_flask(debug=False):
@@ -26,8 +29,11 @@ def start_flask(debug=False):
     Runs flask_shutdown() when flask is shutdown
     '''
     logging.info("Starting flask ...")
+
+    sess = Session()
+
     app = current_app._get_current_object()
-    app.secret_key = SECRET_KEY
+    app.config.from_object(SessionConfig)
     app.static_folder = 'src/static'
     app.template_folder = 'src/templates'
     app.before_request(before_request)
@@ -37,6 +43,8 @@ def start_flask(debug=False):
     app.add_url_rule(root_web_path + 'fakeEmbed/<path:file_and_path>', 'get_embed_file', get_embed_file)
     app.add_url_rule(root_web_path + 'Settings', 'settings', settings, methods=['POST', 'GET'])
     app.add_url_rule(root_web_path + '<path:subpath>', 'sub_pages', sub_pages)
+    sess.init_app(app)
+
     # use for quick debugging
     #app.run(debug=debug, use_reloader=False)
     #flask_shutdown()
@@ -88,9 +96,8 @@ def remove_from_recent_topics():
 
 def before_request():
     '''
-    Defines actions that are run before the every request
+    Defines actions that are run before every request
     '''
-    session.permanent = True
     if not('settings' in session):
         session['settings'] = {
             'global_search_in_files': False, 'search_in_subfiles': True}

@@ -14,6 +14,14 @@ dir_breaks = '/'
 
 
 #######################################################################################################
+#                               Redis settings
+#######################################################################################################
+
+# Define URL of Redis used for Flask sessions
+REDIS_URL = 'redis://redis:6379'
+
+
+#######################################################################################################
 #                               Flask settings
 #######################################################################################################
 
@@ -32,7 +40,7 @@ root_web_path = '/'
 file_upload_path = 'fakeUpload'
 
 # Secret key flask uses for session cookies
-SECRET_KEY = r'<generate e.g. with "os.urandom(24)>"'
+FLASK_SECRET_KEY = r'<generate e.g. with "os.urandom(24)>"'
 
 # Define number of elements displayed in the recent section on the mainapge
 recent_topic_len = 5

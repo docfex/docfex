@@ -3,9 +3,9 @@ Docfex can be started using the [docker-compose.yml](../../docker-compose.yml) f
 This file is based on the Elasticsearch *docker-compose.yml* file from their installation instructions found [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html).
 
 ## Docker networking
-For docfex to be able to communicate with Elasticsearch, a docker network called *docfex-net* is defined for the first Elasticsearch container, and used again by docfex. This allows both containers to communicate.
+For docfex to be able to communicate with Elasticsearch and Redis, a docker network called *docfex-net* is defined. This allows all containers to communicate.
 
-**Note:** es_hosts list inside *config.py* must include containernames defined for the first Elasticsearch containers (*elastic* and *elastic2* in this example). Otherwise docfex can't connect to Elasticsearch.
+**Note:** es_hosts list inside *config.py* must include containernames defined for the Elasticsearch containers (*elastic* and *elastic2* in this example). Otherwise docfex can't connect to Elasticsearch.
 
 For more info on docker networking, see [Docker Networking](https://docs.docker.com/network/)
 
@@ -15,7 +15,7 @@ In this docker-compose file, the image from [manuelhatzl/elasticsearch_ingestatt
 
 Since docfex should be able to handle big pdfs, the environment settings for Elasticsearch were also increased.
 For that, the heap size was increased by changing the JVM options *-Xms* and *-Xmx* from 512 MB to 2 GB respectively. 
-Additionally, also the maximal http content lenght was increased to 1.7 GB to be able to send large files.
+Additionally, also the maximal http content lenght was increased to 1700 MB to be able to send large files.
 
 **Note:** Per default, both Elasticsearch services store their values in docker volumes.
 If this is not wanted, you must change the service volumes for both services to bind mount.
@@ -25,10 +25,13 @@ An example of a bind mount can be seen in the docfex service.
 Docfex was tested with around 1000 pdfs with pdfs up to 500 MB of size. In this case, the heap size had to be increased to 10 GB.
 (This was tested on a single node!) 
 
+## Configuring the Redis service
+As described in [UsingContainers.md](UsingContainers.md), Redis is used as session interface for Flask.
+For that, a Redis service must be added that has access to the docfex-net network. The URL to the Redis service must be set in *config.py*, otherwise Flask can't store session informations.
 
 ## Configuring the Docfex service
 Docfex is the service that runs the Flask part and synchronises Elasticsearch with the given base path on the OS.
-As it depends on Elasticsearch to be available, the container will be started after both Elasticsearch containers are running.
+As it depends on Elasticsearch and Redis to be available, the container will be started after both Elasticsearch containers and Redis are running.
 
 **Note:** As described in the docker-compose reference documentation [here](https://docs.docker.com/compose/compose-file/)
 , *depend_on* is not waiting for a program inside a container to be ready, so docfex will return connection errors at first!
