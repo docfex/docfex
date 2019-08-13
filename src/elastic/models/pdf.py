@@ -14,12 +14,9 @@ class PdfDoc(BaseDoc, AttachmentDoc):
     '''
     Document class to represent a pdf file
     '''
-    class Meta:
-        doc_type = PdfSettings._type
 
     class Index:
         name = PdfSettings._index
-        doc_type = PdfSettings._type
         settings = index_settings
 
 
@@ -101,13 +98,13 @@ class EsPdf(EsBase):
 
         return created
 
-    def get(self, _source_exclude=[], ** kwargs):
+    def get(self, _source_excludes=[], ** kwargs):
         '''
         Returns the pdf document of this instance
         '''
         _exclude = []
-        _exclude = _source_exclude[:] + attachment_fields[:]
-        self._own_doc = PdfDoc.get(id=self.es_id, _source_exclude=_exclude, ** kwargs)
+        _exclude = _source_excludes[:] + attachment_fields[:]
+        self._own_doc = PdfDoc.get(id=self.es_id, _source_excludes=_exclude, ** kwargs)
         return self._own_doc 
 
 

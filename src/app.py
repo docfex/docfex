@@ -181,7 +181,7 @@ def get_subpage(subpath):
     '''
     try:
         s = Search(using=es_client).query('match', web_path=subpath)
-        s = s.source(exclude=attachment_fields)
+        s = s.source(excludes=attachment_fields)
         res = s[0].execute()
         return None if (res.hits.total == 0) else res.hits[0]
     except (TransportError, NewConnectionError, ConnectionRefusedError):
@@ -205,7 +205,7 @@ def sub_pages(subpath=None):
     norm_subpath = subpath.replace(root_web_path,'/')[1:]
     if first_hit == None:
         return abort(404)
-    elif first_hit.meta.doc_type == file_group:
+    else:
         add_to_recent_topics(norm_subpath)
         if first_hit.meta.index == 'markdown':
             headings = json.loads(first_hit.saved_md.header_ids)
@@ -218,15 +218,14 @@ def sub_pages(subpath=None):
             return render_template('audio.html', file_and_path=norm_subpath, type=first_hit.mimetype, header=header())
         elif first_hit.meta.index == 'video':
             return render_template('video.html', file_and_path=norm_subpath, type=first_hit.mimetype, header=header())
+        elif first_hit.meta.index == folder_group:
+            remove_from_recent_topics()
+            sub_t = topics(first_hit.web_path)
+            return render_template("subsection.html", base_topics=sub_t.base_topics, sub_topics=sub_t.sub_topics,
+                                section=norm_subpath, header=header(), len=len)
         else:
             remove_from_recent_topics()
-            return abort(404)    
-    elif first_hit.meta.doc_type == folder_group:
-        sub_t = topics(first_hit.web_path)
-        return render_template("subsection.html", base_topics=sub_t.base_topics, sub_topics=sub_t.sub_topics,
-                               section=norm_subpath, header=header(), len=len)
-    else:
-        return abort(404)
+            return abort(404)
 
 
 @search_requested

@@ -17,7 +17,7 @@ Docfex synchronises Elastic with the OS, so deleting a document on the OS will a
 To install docfex, there are currently two major ways:
 
 ### 1. Using docker or docker-compose
-To get docfex up and running, adapt [docker-compose.yml](./docker-compose.yml) to your needs and then run
+To get docfex up and running, adapt [docker-compose.yml](docker-compose.yml) to your needs and then run
 ```
 sudo docker-compose up
 ```

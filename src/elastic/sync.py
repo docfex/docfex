@@ -77,7 +77,7 @@ async def _delete_moved_items(valid_items):
     if not(valid_items):
         # no items saved -> os is empty, drop elastic
         s = Search(index=es_indices).query('match_all')
-        s = s.source(include=['web_path'])
+        s = s.source(includes=['web_path'])
         _delete_doc_by_query(s)
         return
 
@@ -99,7 +99,7 @@ async def _delete_moved_items(valid_items):
                 break    
     # create search here again to prevent versionerror in elastic
     s = Search(index=es_indices)
-    s = s.source(include=['web_path'])
+    s = s.source(includes=['web_path'])
     for v_item in valid_items:
         s = s.exclude('term', web_path=v_item)
     _delete_doc_by_query(s)
@@ -209,7 +209,7 @@ async def _save_doc(doc, force_update=False):
     Saves document if os is different than elastic
     '''
     if not(force_update) and doc.exists():
-        es_doc = doc.get(_source_include=['last_modified', 'os_size'])
+        es_doc = doc.get(_source_includes=['last_modified', 'os_size'])
         if not(_is_es_different(es_doc, doc)):
             # elastic already up to date
             return True

@@ -20,7 +20,7 @@ class topics:
         root_topics = []
         res = topics._find_topics(root_web_path)
         for hit in res:
-            if hit.meta.doc_type == folder_group:
+            if hit.meta.index == folder_group:
                 folder = web_folder(hit.web_path, hit.name, hit.web_icon)
                 root_topics.append(folder)
         return root_topics
@@ -30,12 +30,12 @@ class topics:
         '''
         Moves a hit either in file or foldergroup
         '''
-        if hit.meta.doc_type == folder_group:
+        if hit.meta.index == folder_group:
             if not(folder_group in topic_dict):
                 topic_dict[folder_group] = []
             folder = web_folder(hit.web_path, hit.name, hit.web_icon)
             topic_dict[folder_group].append(folder)
-        elif hit.meta.doc_type == file_group:
+        else:
             if not(file_group in topic_dict):
                 topic_dict[file_group] = []
 
@@ -50,7 +50,7 @@ class topics:
         s = Search(using=es_client).query('term', parent_path=parent_path)
         exclude_fields = attachment_fields[:]
         exclude_fields.append('saved_md')
-        s = s.source(exclude=exclude_fields)
+        s = s.source(excludes=exclude_fields)
         s = s.sort(
             {"web_path": {"order": "asc"}}
         )

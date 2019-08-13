@@ -14,7 +14,8 @@ index_settings = {
     'number_of_shards': 2,
     'sort.field': 'web_path',
     'sort.order': 'desc',
-    'codec': 'best_compression'
+    'codec': 'best_compression',
+    'max_ngram_diff': 20
 }
 
 class BaseDoc(Document):
@@ -126,7 +127,7 @@ class EsBase:
         if not(i.exists()):
             return False
         try:
-            self.get(_source_exclude=['*'])
+            self.get(_source_excludes=['*'])
             return True
         except NotFoundError:
             return False

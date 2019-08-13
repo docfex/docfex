@@ -12,11 +12,9 @@ class FolderDoc(BaseDoc):
     '''
     class Meta:
         dynamic = MetaField('strict')
-        doc_type = FolderSettings._type
 
     class Index:
         name = FolderSettings._index
-        doc_type = FolderSettings._type
         settings = index_settings
 
 

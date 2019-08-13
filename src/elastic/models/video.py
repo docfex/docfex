@@ -13,11 +13,9 @@ class VideoDoc(BaseDoc):
     '''
     class Meta:
         dynamic = MetaField('strict')
-        doc_type = VideoSettings._type
 
     class Index:
         name = VideoSettings._index
-        doc_type = VideoSettings._type
         settings = index_settings
 
 

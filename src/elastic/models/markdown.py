@@ -24,12 +24,8 @@ class MarkdownDoc(BaseDoc, AttachmentDoc):
     '''
     saved_md = Object(MarkdownStoredDoc, enabled=False)
 
-    class Meta:
-        doc_type = MarkdownSettings._type
-
     class Index:
         name = MarkdownSettings._index
-        doc_type = MarkdownSettings._type
         settings = index_settings
 
 
@@ -111,12 +107,12 @@ class EsMarkdown(EsBase):
 
         return created    
 
-    def get(self, _source_exclude=[], ** kwargs):
+    def get(self, _source_excludes=[], ** kwargs):
         '''
         Returns the pdf document of this instance
         '''
         _exclude = []
-        _exclude = _source_exclude[:] + attachment_fields[:]
-        self._own_doc = MarkdownDoc.get(id=self.es_id, _source_exclude=_exclude, ** kwargs)
+        _exclude = _source_excludes[:] + attachment_fields[:]
+        self._own_doc = MarkdownDoc.get(id=self.es_id, _source_excludes=_exclude, ** kwargs)
         return self._own_doc
 
