@@ -18,7 +18,8 @@ def start_server(flask_debug=False):
     '''
     Starts docfex
     '''
-    logging.basicConfig(level=logging.WARNING)
+    logging.basicConfig(level=logging.INFO)
+    logging.info("Starting docfex ...")
     start_elastic()
     with app.app_context():
         start_flask(debug=flask_debug)
@@ -28,6 +29,7 @@ def start_elastic():
     '''
     Connects to elastic and creates a background job to kepp elastic and os in sync
     '''
+    logging.info("Accessing elasticsearch ...")
     setup_elastic()
     # omitting a trigger removes the job from the job pool, but interval trigger first waits for the interval to finish before execution
     # => using cron first, then reschedule to interval to start job immediately  

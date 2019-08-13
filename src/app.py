@@ -25,11 +25,13 @@ def start_flask(debug=False):
     Registers all request functions and starts the flask-app.
     Runs flask_shutdown() when flask is shutdown
     '''
+    logging.info("Starting flask ...")
     app = current_app._get_current_object()
     app.secret_key = SECRET_KEY
     app.static_folder = 'src/static'
     app.template_folder = 'src/templates'
-    app.before_first_request(bef_first_request)
+    app.before_request(before_request)
+    app.add_url_rule(root_web_path + 'favicon.ico', 'favicon', favicon)
     app.add_url_rule(root_web_path, 'home', home)
     app.add_url_rule(root_web_path + file_upload_path + '/<path:file_and_path>', 'get_local_file', get_local_file)
     app.add_url_rule(root_web_path + 'fakeEmbed/<path:file_and_path>', 'get_embed_file', get_embed_file)
@@ -44,6 +46,11 @@ def start_flask(debug=False):
         pass
     finally:    
         flask_shutdown()
+
+
+def favicon():
+    app = current_app._get_current_object()
+    return send_from_directory(app.static_folder, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
 def flask_shutdown():
@@ -79,9 +86,9 @@ def remove_from_recent_topics():
     del(session['recent'][-1])         
 
 
-def bef_first_request():
+def before_request():
     '''
-    Defines actions that are run before the first request
+    Defines actions that are run before the every request
     '''
     session.permanent = True
     if not('settings' in session):
@@ -94,7 +101,8 @@ def bef_first_request():
             }
     if not('recent' in session):
         session['recent'] = []
-    
+
+
 
 def is_path_valid(path):
     '''
