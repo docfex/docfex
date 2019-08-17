@@ -6,7 +6,7 @@ import abc
 
 
 name_analyzer = analyzer('name_analyzer', 
-    tokenizer=tokenizer('trigram', 'nGram', min_gram=3, max_gram=20),
+    tokenizer=tokenizer('trigram', 'nGram', min_gram=5, max_gram=15),
     filter=['lowercase']
 )
 
@@ -15,7 +15,8 @@ index_settings = {
     'sort.field': 'web_path',
     'sort.order': 'desc',
     'codec': 'best_compression',
-    'max_ngram_diff': 20
+    'max_ngram_diff': 20,
+    'highlight.max_analyzed_offset':10000000
 }
 
 class BaseDoc(Document):
